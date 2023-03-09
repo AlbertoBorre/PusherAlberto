@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challenge: Pusher Use-case quick starts</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="chart_div" style="width: 100%; height: 500px;"></div>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+  <script>
+    google.charts.load("current", { packages: ["corechart"] });
+    google.charts.setOnLoadCallback(() => {
+      const dataTable = google.visualization.arrayToDataTable([
+        ["Año", "Cantidad"],
+        [2022, 5],
+      ]);
+      const chart = new google.visualization.AreaChart(
+        document.getElementById("chart_div")
+      );
+      const options = {
+        title: "SIMULACION de animales adoptados en Jaen por año",
+        hAxis: { title: "Años", titleTextStyle: { color: "#333" } },
+        vAxis: { minValue: 0 },
+        animation: { duration: 100, easing: "out" },
+      };
+      chart.draw(dataTable, options);
+      let year = 2023;
+      Pusher.logToConsole = true;
+      const pusher = new Pusher(
+        "96ee000cbf43915d698f", // key
+        {
+          cluster: "eu", //cluster
+          forceTLS: true,
+        }
+      );
+      const channel = pusher.subscribe
+      ("price-btcusd");
+      console.log("test")
+      channel.bind("new-price", (data) => {
+        const row = [year++, data.value];
+        dataTable.addRow(row);
+        chart.draw(dataTable, options);
+      });
+    });
+  
+    function test(){
+      $.ajax({url:"trigger.php", success:function(result){
+        //$("div").text(result);
+      }
+      })
+    }
+  </script>
+
+  <button onclick="test()"> Click </button>
+  <div></div>
+</body>
+</html>
